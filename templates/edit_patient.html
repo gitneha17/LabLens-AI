@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Edit patient{% endblock %}
+{% block breadcrumb %}Edit patient{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">RECORD MANAGEMENT</div><h1>Edit patient</h1><p>Update the patient's saved information.</p></div><a href="{{ url_for('patient_detail', patient_id=patient['id']) }}" class="back-link"><i class="fa-solid fa-arrow-left me-2"></i>Back to patient</a></div>
+<form method="post" class="panel patient-form" novalidate>
+  {% set submit_label = "Save changes" %}
+  {% include "_patient_form.html" %}
+</form>
+{% endblock %}

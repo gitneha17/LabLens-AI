@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Add patient{% endblock %}
+{% block breadcrumb %}Add patient{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">NEW RECORD</div><h1>Add a patient</h1><p>Complete the patient details and blood test values below.</p></div><a href="{{ url_for('patients') }}" class="back-link"><i class="fa-solid fa-arrow-left me-2"></i>Back to records</a></div>
+<form method="post" class="panel patient-form" novalidate>
+  {% set submit_label = "Save patient & generate remarks" %}
+  {% include "_patient_form.html" %}
+</form>
+{% endblock %}

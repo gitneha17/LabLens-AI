@@ -1,0 +1,316 @@
+
+{% extends "base.html" %}
+
+{% block title %}Patient Details{% endblock %}
+{% block breadcrumb %}Patient Details{% endblock %}
+
+{% block content %}
+
+{% set glucose_display_unit = patient['glucose_custom_unit'] if patient['glucose_unit'] == 'Other' and patient['glucose_custom_unit'] else patient['glucose_unit'] %}
+{% set haemoglobin_display_unit = patient['haemoglobin_custom_unit'] if patient['haemoglobin_unit'] == 'Other' and patient['haemoglobin_custom_unit'] else patient['haemoglobin_unit'] %}
+{% set cholesterol_display_unit = patient['cholesterol_custom_unit'] if patient['cholesterol_unit'] == 'Other' and patient['cholesterol_custom_unit'] else patient['cholesterol_unit'] %}
+{% set risk = patient['risk_level'] or 'Not assessed' %}
+
+<div class="page-heading">
+    <div>
+        <div class="eyebrow">PATIENT PROFILE</div>
+        <h1>{{ patient['full_name'] }}</h1>
+        <p>Patient information and laboratory report.</p>
+    </div>
+
+    <div class="heading-actions">
+        <a href="{{ url_for('edit_patient', patient_id=patient['id']) }}"
+           class="btn btn-light-outline">
+            <i class="fa-solid fa-pen me-2"></i>Edit
+        </a>
+
+        <form method="post"
+              action="{{ url_for('delete_patient', patient_id=patient['id']) }}"
+              data-confirm="Delete this patient record? This action cannot be undone.">
+            <button class="btn btn-danger-soft" type="submit">
+                <i class="fa-solid fa-trash me-2"></i>Delete
+            </button>
+        </form>
+    </div>
+</div>
+
+
+<!-- PATIENT INFORMATION AND LAB RESULTS -->
+
+<div class="row g-3">
+
+    <div class="col-lg-5">
+        <div class="panel detail-panel">
+
+            <div class="detail-profile">
+                <span class="profile-avatar">
+                    {{ patient['full_name'][:1]|upper }}
+                </span>
+
+                <div>
+                    <h2>{{ patient['full_name'] }}</h2>
+                    <span class="muted-cell">
+                        Patient ID #{{ patient['id'] }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="detail-divider"></div>
+
+            <div class="detail-item">
+                <span>Date of birth</span>
+                <strong>{{ patient['dob']|format_date }}</strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Gender</span>
+                <strong>{{ patient['gender'] or 'Not specified' }}</strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Email address</span>
+                <strong>{{ patient['email'] }}</strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Record created</span>
+                <strong>{{ patient['created_at'] }}</strong>
+            </div>
+
+            <div class="detail-item">
+                <span>Last updated</span>
+                <strong>{{ patient['updated_at'] }}</strong>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- LAB RESULTS -->
+
+    <div class="col-lg-7">
+        <div class="panel detail-panel">
+
+            <div class="section-heading compact">
+                <div>
+                    <h2>Blood test results</h2>
+                    <p>Recorded laboratory values</p>
+                </div>
+
+                <span class="lab-icon">
+                    <i class="fa-solid fa-flask"></i>
+                </span>
+            </div>
+
+
+            <!-- GLUCOSE -->
+
+            <div class="lab-result-item">
+                <div class="lab-result-heading">
+                    <strong>Glucose</strong>
+                    <span>
+                        {% if patient['glucose'] is not none %}
+                            {{ patient['glucose']|round(2) }}
+                            {{ glucose_display_unit or 'Unknown' }}
+                        {% else %}
+                            Not available
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span>Test type</span>
+                    <strong>
+                        {{ patient['glucose_test_type'] or 'Not specified' }}
+                    </strong>
+                </div>
+
+                <div class="detail-item">
+                    <span>Reference range</span>
+                    <strong>
+                        {% if patient['glucose_ref_low'] is not none
+                              and patient['glucose_ref_high'] is not none %}
+                            {{ patient['glucose_ref_low'] }}
+                            – {{ patient['glucose_ref_high'] }}
+                            {{ glucose_display_unit or 'Unknown' }}
+                        {% else %}
+                            Not supplied
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="detail-divider"></div>
+
+
+            <!-- HAEMOGLOBIN -->
+
+            <div class="lab-result-item">
+                <div class="lab-result-heading">
+                    <strong>Haemoglobin</strong>
+                    <span>
+                        {% if patient['haemoglobin'] is not none %}
+                            {{ patient['haemoglobin']|round(2) }}
+                            {{ haemoglobin_display_unit or 'Unknown' }}
+                        {% else %}
+                            Not available
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span>Reference range</span>
+                    <strong>
+                        {% if patient['haemoglobin_ref_low'] is not none
+                              and patient['haemoglobin_ref_high'] is not none %}
+                            {{ patient['haemoglobin_ref_low'] }}
+                            – {{ patient['haemoglobin_ref_high'] }}
+                            {{ haemoglobin_display_unit or 'Unknown' }}
+                        {% else %}
+                            Not supplied
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="detail-divider"></div>
+
+
+            <!-- TOTAL CHOLESTEROL -->
+
+            <div class="lab-result-item">
+                <div class="lab-result-heading">
+                    <strong>Total cholesterol</strong>
+                    <span>
+                        {% if patient['cholesterol'] is not none %}
+                            {{ patient['cholesterol']|round(2) }}
+                            {{ cholesterol_display_unit or 'Unknown' }}
+                        {% else %}
+                            Not available
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span>Reference range</span>
+                    <strong>
+                        {% if patient['cholesterol_ref_low'] is not none
+                              and patient['cholesterol_ref_high'] is not none %}
+                            {{ patient['cholesterol_ref_low'] }}
+                            – {{ patient['cholesterol_ref_high'] }}
+                            {{ cholesterol_display_unit or 'Unknown' }}
+                        {% else %}
+                            Not supplied
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="units-note mt-3">
+                <i class="fa-solid fa-circle-info"></i>
+                Reference ranges are user-entered and have not been
+                independently verified. Application default thresholds
+                are demonstration values.
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<!-- AI LAB TEST SUMMARY -->
+
+<div class="panel remarks-panel mt-3">
+
+    <div class="remarks-heading">
+        <span class="ai-badge">
+            <i class="fa-solid fa-sparkles"></i>
+            AI HEALTH INSIGHTS
+        </span>
+
+        <form method="post"
+              action="{{ url_for('analyze_patient', patient_id=patient['id']) }}">
+
+            <button class="btn btn-outline-primary btn-sm" type="submit">
+                <i class="fa-solid fa-rotate me-1"></i>
+
+                {% if patient['remarks'] %}
+                    Regenerate report
+                {% else %}
+                    Generate report
+                {% endif %}
+            </button>
+
+        </form>
+    </div>
+
+
+    <div class="mt-3">
+
+        <h2>Your Lab Test Summary</h2>
+
+        <div class="detail-item mt-3 mb-2">
+            <span>Overall assessment</span>
+
+            <strong>
+                {% if risk == 'High' %}
+                    <span class="badge bg-danger">High</span>
+
+                {% elif risk == 'Moderate' %}
+                    <span class="badge bg-warning text-dark">Moderate</span>
+
+                {% elif risk == 'Low' %}
+                    <span class="badge bg-success">Low</span>
+
+                {% else %}
+                    <span class="badge bg-secondary">
+                        {{ risk }}
+                    </span>
+                {% endif %}
+            </strong>
+        </div>
+
+        <small class="text-muted">
+            This is an application-generated informational category,
+            not a clinical diagnosis.
+        </small>
+
+    </div>
+
+    <div class="detail-divider mt-3"></div>
+
+
+    <!-- GENERATED REMARKS -->
+
+    {% if patient['remarks'] %}
+
+        <div class="remarks-content mt-3"
+             style="white-space: pre-line; line-height: 1.7;">
+            {{ patient['remarks'] }}
+        </div>
+
+    {% else %}
+
+        <div class="remarks-content mt-3">
+            <p>
+                No report has been generated yet.
+            </p>
+
+            <p>
+                Select <strong>Generate report</strong> to view
+                patient-friendly explanations of the laboratory results.
+            </p>
+        </div>
+
+    {% endif %}
+
+
+    <div class="disclaimer-line mt-3">
+        <i class="fa-solid fa-shield-heart"></i>
+        Informational only — not a medical diagnosis.
+    </div>
+
+</div>
+
+{% endblock %}

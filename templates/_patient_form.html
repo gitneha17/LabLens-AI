@@ -1,0 +1,454 @@
+
+<div class="form-grid">
+
+    <!-- Personal Information -->
+    <div class="form-section-title">
+        <span class="section-number">01</span>
+        <div>
+            <h3>Personal information</h3>
+            <p>Enter the patient's contact details.</p>
+        </div>
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-md-6">
+            <label class="form-label" for="full_name">
+                Full name <span>*</span>
+            </label>
+            <input
+                class="form-control"
+                id="full_name"
+                name="full_name"
+                required
+                maxlength="100"
+                placeholder="e.g. Robyn Pears"
+                value="{{ data.get('full_name', '') }}"
+            >
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="dob">
+                Date of birth <span>*</span>
+            </label>
+            <input
+                class="form-control"
+                id="dob"
+                name="dob"
+                required
+                placeholder="dd/mm/yyyy"
+                value="{{ data.get('dob', '') }}"
+            >
+            <div class="form-hint">
+                Use dd/mm/yyyy. The supplied dd.mm.yyyy format is also accepted.
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="email">
+                Email address <span>*</span>
+            </label>
+            <input
+                class="form-control"
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="name@example.com"
+                value="{{ data.get('email', '') }}"
+            >
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="gender">
+                Gender
+            </label>
+            {% set selected_gender = data.get('gender', 'Not specified') %}
+            <select class="form-select" id="gender" name="gender">
+                <option value="Not specified"
+                    {% if selected_gender == 'Not specified' %}selected{% endif %}>
+                    Not specified
+                </option>
+                <option value="Male"
+                    {% if selected_gender == 'Male' %}selected{% endif %}>
+                    Male
+                </option>
+                <option value="Female"
+                    {% if selected_gender == 'Female' %}selected{% endif %}>
+                    Female
+                </option>
+                <option value="Other"
+                    {% if selected_gender == 'Other' %}selected{% endif %}>
+                    Other
+                </option>
+                <option value="Prefer not to say"
+                    {% if selected_gender == 'Prefer not to say' %}selected{% endif %}>
+                    Prefer not to say
+                </option>
+            </select>
+            <div class="form-hint">
+                Optional. Used only as limited patient context.
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Blood Test Results -->
+    <div class="form-section-title blood-title">
+        <span class="section-number">02</span>
+        <div>
+            <h3>Blood test results</h3>
+            <p>Enter values and units exactly as shown on the laboratory report.</p>
+        </div>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- Glucose -->
+        <div class="col-md-4">
+            <label class="form-label" for="glucose">
+                Glucose <span>*</span>
+            </label>
+            <input
+                class="form-control"
+                id="glucose"
+                name="glucose"
+                type="number"
+                step="any"
+                min="0"
+                required
+                placeholder="e.g. 94"
+                value="{{ data.get('glucose', '') }}"
+            >
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label" for="glucose_unit">
+                Glucose unit
+            </label>
+
+            {% set glucose_unit = data.get('glucose_unit', 'Unknown') %}
+
+            <select
+                class="form-select"
+                id="glucose_unit"
+                name="glucose_unit"
+                onchange="toggleCustomUnit('glucose')"
+            >
+                {% for unit in ['Unknown', 'mg/dL', 'mmol/L', 'Other'] %}
+                    <option value="{{ unit }}"
+                        {% if glucose_unit == unit %}selected{% endif %}>
+                        {{ unit }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <input
+                class="form-control mt-2 custom-unit-input"
+                id="glucose_custom_unit"
+                name="glucose_custom_unit"
+                placeholder="Enter custom glucose unit"
+                maxlength="30"
+                value="{{ data.get('glucose_custom_unit', '') }}"
+                {% if glucose_unit != 'Other' %}hidden{% endif %}
+            >
+        </div>
+
+        <!-- Haemoglobin -->
+        <div class="col-md-4">
+            <label class="form-label" for="haemoglobin">
+                Haemoglobin <span>*</span>
+            </label>
+            <input
+                class="form-control"
+                id="haemoglobin"
+                name="haemoglobin"
+                type="number"
+                step="any"
+                min="0"
+                required
+                placeholder="e.g. 13.5"
+                value="{{ data.get('haemoglobin', '') }}"
+            >
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label" for="haemoglobin_unit">
+                Haemoglobin unit
+            </label>
+
+            {% set haemoglobin_unit = data.get('haemoglobin_unit', 'Unknown') %}
+
+            <select
+                class="form-select"
+                id="haemoglobin_unit"
+                name="haemoglobin_unit"
+                onchange="toggleCustomUnit('haemoglobin')"
+            >
+                {% for unit in ['Unknown', 'g/dL', 'g/L', 'mmol/L', 'Other'] %}
+                    <option value="{{ unit }}"
+                        {% if haemoglobin_unit == unit %}selected{% endif %}>
+                        {{ unit }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <input
+                class="form-control mt-2 custom-unit-input"
+                id="haemoglobin_custom_unit"
+                name="haemoglobin_custom_unit"
+                placeholder="Enter custom haemoglobin unit"
+                maxlength="30"
+                value="{{ data.get('haemoglobin_custom_unit', '') }}"
+                {% if haemoglobin_unit != 'Other' %}hidden{% endif %}
+            >
+        </div>
+
+        <!-- Cholesterol -->
+        <div class="col-md-4">
+            <label class="form-label" for="cholesterol">
+                Cholesterol <span>*</span>
+            </label>
+            <input
+                class="form-control"
+                id="cholesterol"
+                name="cholesterol"
+                type="number"
+                step="any"
+                min="0"
+                required
+                placeholder="e.g. 180"
+                value="{{ data.get('cholesterol', '') }}"
+            >
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label" for="cholesterol_unit">
+                Cholesterol unit
+            </label>
+
+            {% set cholesterol_unit = data.get('cholesterol_unit', 'Unknown') %}
+
+            <select
+                class="form-select"
+                id="cholesterol_unit"
+                name="cholesterol_unit"
+                onchange="toggleCustomUnit('cholesterol')"
+            >
+                {% for unit in ['Unknown', 'mg/dL', 'mmol/L', 'Other'] %}
+                    <option value="{{ unit }}"
+                        {% if cholesterol_unit == unit %}selected{% endif %}>
+                        {{ unit }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <input
+                class="form-control mt-2 custom-unit-input"
+                id="cholesterol_custom_unit"
+                name="cholesterol_custom_unit"
+                placeholder="Enter custom cholesterol unit"
+                maxlength="30"
+                value="{{ data.get('cholesterol_custom_unit', '') }}"
+                {% if cholesterol_unit != 'Other' %}hidden{% endif %}
+            >
+        </div>
+
+        <!-- Glucose test type -->
+        <div class="col-md-6">
+            <label class="form-label" for="glucose_test_type">
+                Glucose test type
+            </label>
+
+            {% set selected_test = data.get('glucose_test_type', 'Not specified') %}
+
+            <select
+                class="form-select"
+                id="glucose_test_type"
+                name="glucose_test_type"
+            >
+                <option value="Not specified"
+                    {% if selected_test == 'Not specified' %}selected{% endif %}>
+                    Not specified
+                </option>
+                <option value="Fasting"
+                    {% if selected_test == 'Fasting' %}selected{% endif %}>
+                    Fasting
+                </option>
+                <option value="Random"
+                    {% if selected_test == 'Random' %}selected{% endif %}>
+                    Random
+                </option>
+            </select>
+
+            <div class="form-hint">
+                Select the test type shown on the original report, if known.
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Optional Reference Ranges -->
+    <div class="form-section-title">
+        <span class="section-number">03</span>
+        <div>
+            <h3>Laboratory reference ranges</h3>
+            <p>Optional. Copy the ranges from the original laboratory report.</p>
+        </div>
+    </div>
+
+    <div class="alert alert-light border">
+        <i class="fa-solid fa-circle-info me-2"></i>
+        Enter both lower and upper values using the same unit as the test result.
+        Leave both fields blank if the reference range is unavailable.
+    </div>
+
+    <div class="row g-3">
+
+        <!-- Glucose reference range -->
+        <div class="col-md-4">
+            <label class="form-label">Glucose lower range</label>
+            <input
+                class="form-control"
+                type="number"
+                step="any"
+                min="0"
+                name="glucose_ref_low"
+                placeholder="Lower value"
+                value="{{ data.get('glucose_ref_low', '') if data.get('glucose_ref_low') is not none else '' }}"
+            >
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Glucose upper range</label>
+            <input
+                class="form-control"
+                type="number"
+                step="any"
+                min="0"
+                name="glucose_ref_high"
+                placeholder="Upper value"
+                value="{{ data.get('glucose_ref_high', '') if data.get('glucose_ref_high') is not none else '' }}"
+            >
+        </div>
+
+        <!-- Haemoglobin reference range -->
+        <div class="col-md-4">
+            <label class="form-label">Haemoglobin lower range</label>
+            <input
+                class="form-control"
+                type="number"
+                step="any"
+                min="0"
+                name="haemoglobin_ref_low"
+                placeholder="Lower value"
+                value="{{ data.get('haemoglobin_ref_low', '') if data.get('haemoglobin_ref_low') is not none else '' }}"
+            >
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Haemoglobin upper range</label>
+            <input
+                class="form-control"
+                type="number"
+                step="any"
+                min="0"
+                name="haemoglobin_ref_high"
+                placeholder="Upper value"
+                value="{{ data.get('haemoglobin_ref_high', '') if data.get('haemoglobin_ref_high') is not none else '' }}"
+            >
+        </div>
+
+        <!-- Cholesterol reference range -->
+        <div class="col-md-4">
+            <label class="form-label">Cholesterol lower range</label>
+            <input
+                class="form-control"
+                type="number"
+                step="any"
+                min="0"
+                name="cholesterol_ref_low"
+                placeholder="Lower value"
+                value="{{ data.get('cholesterol_ref_low', '') if data.get('cholesterol_ref_low') is not none else '' }}"
+            >
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Cholesterol upper range</label>
+            <input
+                class="form-control"
+                type="number"
+                step="any"
+                min="0"
+                name="cholesterol_ref_high"
+                placeholder="Upper value"
+                value="{{ data.get('cholesterol_ref_high', '') if data.get('cholesterol_ref_high') is not none else '' }}"
+            >
+        </div>
+
+    </div>
+
+
+    <!-- AI Information -->
+    <div class="ai-info">
+        <span>
+            <i class="fa-solid fa-sparkles"></i>
+        </span>
+
+        <div>
+            <strong>AI health observations</strong>
+            <p>
+                LabLens uses Groq AI to explain the recorded laboratory
+                information. It does not assume missing measurement units
+                or reference ranges. When sufficient information is
+                unavailable, the report clearly states that interpretation
+                is limited. AI observations are informational and are
+                not a medical diagnosis.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="form-actions">
+
+    <a href="{{ url_for('patients') }}" class="btn btn-light-outline">
+        Cancel
+    </a>
+
+    <button type="submit" class="btn btn-primary btn-main">
+        <i class="fa-solid fa-sparkles me-2"></i>
+        {{ submit_label }}
+    </button>
+
+</div>
+
+
+<script>
+    function toggleCustomUnit(test) {
+        const selector = document.getElementById(test + '_unit');
+        const customInput = document.getElementById(
+            test + '_custom_unit'
+        );
+
+        if (!selector || !customInput) return;
+
+        const isOther = selector.value === 'Other';
+
+        customInput.hidden = !isOther;
+        customInput.required = isOther;
+
+        if (!isOther) {
+            customInput.value = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleCustomUnit('glucose');
+        toggleCustomUnit('haemoglobin');
+        toggleCustomUnit('cholesterol');
+    });
+</script>

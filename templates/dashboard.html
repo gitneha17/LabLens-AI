@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><div class="eyebrow">OVERVIEW</div><h1>Good day. <span>Here's your workspace.</span></h1><p>Manage patient records and review AI-generated laboratory observations.</p></div>
+  <a href="{{ url_for('add_patient') }}" class="btn btn-primary btn-main"><i class="fa-solid fa-plus me-2"></i>Add patient</a>
+</div>
+<div class="notice-banner"><span class="notice-icon"><i class="fa-solid fa-sparkles"></i></span><div><strong>Welcome to LabLens AI</strong><p>Organize patient information and generate cautious, AI-assisted observations from entered blood test values.</p></div><span class="notice-tag">GROQ-READY</span></div>
+
+<div class="row g-3 stat-row">
+  <div class="col-md-6 col-xl-4"><div class="stat-card"><div class="stat-top"><span>Total patients</span><span class="stat-icon blue"><i class="fa-solid fa-users"></i></span></div><div class="stat-number">{{ total }}</div><div class="stat-caption">Saved patient records</div></div></div>
+  <div class="col-md-6 col-xl-4"><div class="stat-card"><div class="stat-top"><span>AI remarks saved</span><span class="stat-icon violet"><i class="fa-solid fa-wand-magic-sparkles"></i></span></div><div class="stat-number">{{ ai_count }}</div><div class="stat-caption">Records with an AI response or status note</div></div></div>
+  <div class="col-md-6 col-xl-4"><div class="stat-card quick-card"><div class="stat-top"><span>Quick action</span><span class="stat-icon mint"><i class="fa-solid fa-user-plus"></i></span></div><a href="{{ url_for('add_patient') }}" class="quick-link">Register a patient <i class="fa-solid fa-arrow-right"></i></a><div class="stat-caption">Add details and request AI observations</div></div></div>
+</div>
+
+<div class="section-heading"><div><h2>Recently added</h2><p>Your latest patient records</p></div><a class="text-link" href="{{ url_for('patients') }}">View all records <i class="fa-solid fa-arrow-right ms-1"></i></a></div>
+<div class="panel table-panel">
+  {% if recent %}
+  <div class="table-responsive"><table class="table align-middle data-table mb-0">
+    <thead><tr><th>Patient</th><th>Email</th><th>Glucose</th><th>Haemoglobin</th><th>Cholesterol</th><th></th></tr></thead>
+    <tbody>{% for p in recent %}
+      <tr><td><div class="patient-cell"><span class="patient-avatar">{{ p['full_name'][:1]|upper }}</span><strong>{{ p['full_name'] }}</strong></div></td><td class="muted-cell">{{ p['email'] }}</td><td>{{ p['glucose']|round(2) }}</td><td>{{ p['haemoglobin']|round(2) }}</td><td>{{ p['cholesterol']|round(2) }}</td><td><a class="icon-action" href="{{ url_for('patient_detail', patient_id=p['id']) }}"><i class="fa-solid fa-arrow-up-right-from-square"></i></a></td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+  {% else %}
+  <div class="empty-state"><span><i class="fa-solid fa-folder-open"></i></span><h3>No patient records yet</h3><p>Add your first patient to get started.</p><a href="{{ url_for('add_patient') }}" class="btn btn-primary btn-main">Add first patient</a></div>
+  {% endif %}
+</div>
+<div class="disclaimer-line"><i class="fa-solid fa-circle-info"></i> LabLens AI is an educational demonstration. AI-generated remarks are not a diagnosis and must be reviewed with a qualified healthcare professional.</div>
+{% endblock %}
